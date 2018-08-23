@@ -1,0 +1,72 @@
+
+body {
+    background-color: black;
+    color: white;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+#__meta {
+    /*position: fixed;*/
+    position: fixed;
+
+    z-index: 1;
+    font-family: monospace;
+}
+
+#__meta div {
+    /*position: fixed;*/
+    position: fixed;
+    z-index: 2;
+    opacity: 0.9;
+    /*transform: scale(2);*/
+}
+
+#__menu {
+    vertical-align: middle;
+    display: flex;
+}
+
+#__icon {
+    opacity: 0.5;
+    text-align: center;
+    line-height: 200%;
+    width: 5%;
+    height: 5%;
+    background-color: gray;
+    transition: all 0.35s ease-out;
+    cursor: crosshair;
+}
+#__icon:hover {
+    opacity: 0.9;
+    background-color: orange;
+    transform: scale(1.75) rotate(90deg);
+}
+#__icon:active {
+    background-color: orangered;
+    transform: scale(1.8) rotate(100deg);
+}
+
+.top_left {
+    left: 1em;
+    top: 1em;
+}
+.top_right {
+    right: 1em;
+    top: 1em;
+}
+
+.bottom_right {
+    right: 1em;
+    bottom: 1em;
+}
+
+#__ {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+

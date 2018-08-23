@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- http://jaukia.github.io/zoomooz/ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zoomooz/1.1.6/jquery.zoomooz.min.js"></script>
+    <link rel='stylesheet' href='index.css' type='text/css' media='all'/>
+</head>
+<body>
+<script>
+    'use strict';
+
+    //(function(send) {
+    //open(url?: string, target?: string, features?: string, replace?: boolean): Window | null;
+
+    // const superOpen = XMLHttpRequest.prototype.open;
+    // XMLHttpRequest.prototype.open = function(url, target, features, replace) {
+    //     console.log('open', url, target, features, replace);
+    //     return superOpen.call(this, url, target, features, replace);
+    // };
+    // const hijackRequest = $('<script>');
+    // hijackRequest.text('$(document).ready(function() { console.log("hijack:"); const superOpen = XMLHttpRequest.prototype.open;\n' +
+    // '    XMLHttpRequest.prototype.open = function(url, target, features, replace) {\n' +
+    // '        console.log(\'open\', url, target, features, replace);\n' +
+    // '        return superOpen.call(this, url, target, features, replace);\n' +
+    // '    }; });');
+
+    //const superSend = XMLHttpRequest.prototype.send;
+    // XMLHttpRequest.prototype.send = function(data,x) {
+    //
+    //     // this.addEventListener('readystatechange', function() {
+    //     //
+    //     // }, false);
+    //
+    //     console.log('XMLHttpRequest send', data,x);
+    //     console.log(superSend);
+    //     superSend.call(data,x);
+    // };
+
+    //})(XMLHttpRequest.prototype.send);
+
+    function soon(x) {
+        setTimeout(x);
+    }
+
+
+
+
+
+    class HoverMenu {
+        constructor() {
+            this.menu = $('<div id="hoverMenu" style="position: fixed; pointer-events: none; background-color:rgba(1,0.75,0,0.25); border: 1px solid gray; opacity: 0.9; z-index: 2">').append(
+                $('<div style="pointer-events:all">').append(
+                    this.left = $('<div style="position: absolute; left: -1em;">'),
+                    this.right = $('<div style="position: absolute; right: -1em;">'),
+                    this.top = $('<div style="position: absolute; top: -1em; ">'),
+                    this.bottom = $('<div style="position: absolute; bottom: -1em; ">')
+                )
+            ).prependTo(document.body).hide();
+
+            $(document).scroll(() => {
+                if (this.menu.is(':visible')) {
+                    this.hoverUpdate();
+                }
+            });
+
+            this.locked = false;
+            this.target = undefined;
+        }
+
+        on(target) {
+            if (this.locked)
+                return;
+
+            this.target = target;
+
+
+            //https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
+            // var rc = {
+            //     x: rect.left,
+            //     y: rect.top…
+            this.hoverUpdate();
+        }
+
+        hoverUpdate() {
+            const B = this.target[0].getBoundingClientRect();
+            this.menu.css({'left': B.left, 'top': B.top, 'width': B.width, 'height': B.height}).show();
+        }
+
+        off() {
+            this.locked = false;
+            this.target = undefined;
+            this.menu.hide();
+        }
+    }
+
+    class Content {
+        /** target DOM element */
+        constructor(target) {
+            this.target = target;
+            this.url = undefined;
+            this.hover = new HoverMenu();
+
+            this.hover.top.append(
+                // $('<input type="text">'),
+                $('<button>y</button>')
+            );
+            this.hover.bottom.append(
+                $('<button>S</button>')
+            );
+            this.hover.left.append(
+                $('<button>W</button>')
+            );
+            this.hover.right.append(
+                $('<button>E</button>')
+            );
+
+
+
+        }
+
+        /** decorates a DOM tree.
+         * eventually this will be modular w/ pluggable API
+         a) rewrite links
+         b) attach link mouse hover, click, etc.. event handlers
+         c) apply style overrides: automatic (high conf),  manual (low conf)
+         --size (incl. visibility, size > 0)
+         --color
+         --text/html rewrite
+         --other JS/CSS overrides
+
+         the result is a procedure consisting of at least 2 stages
+         pre: changes applied before displaying any resulting DOM
+         early: changes asynchronously applied from a queue after the DOM has been displayed,
+         because these are not expected to interrupt the user (progressive updates,
+         possibly at a slow rate)
+         **/
+        fix(d) {
+
+            /*
+               #hoverMenu {
+                    position: absolute;
+                    z-index: 1;
+                    opacity: 0.9;
+                }
+                #hoverMenuLeft {
+                    left: -2em;
+                }
+                #hoverMenuBelow {
+                    bottom: -1em;
+                }
+             */
+
+
+            var u = this.url;
+            var base = new URL('/', u);
+            const baseElement = $('<base href=' + base + '>');
+
+            const head = d.find('head');
+            if (head[0]) {
+                head.prepend(baseElement);
+            } else {
+                d.prepend($('head').append(baseElement));
+            }
+
+
+            const that = this;
+            const clickHandler = function (e) {
+                console.log('clicked', $(this).html(), e);
+                var url = $(this).attr('href');
+                if (url && !url.startsWith('#')) {
+
+                    that.nav(url);
+
+                    e.stopPropagation();
+                    return false; //prevent?
+                }
+            };
+
+            this.zoomState = { zoomed: false };
+
+            const contextClickHandler = function(e) {
+                //http://jaukia.github.io/zoomooz/#zoomcontainer
+
+                //console.log($(this), tgt);
+                //$(this).zoomTo({targetsize:0.75, duration:600, root: tgt.find('div').first() });
+
+                e.stopPropagation();
+
+                // soon(() => {
+                //
+                //     const contexted = $(this);
+                //
+                //     console.log(that.hover);
+                //
+                //     //console.log(hoverState.zoomed!==contexted[0], contexted[0], hoverState.zoomed);
+                //     if (!that.zoomState.zoomed && that.hover.target) { // || hoverState.zoomed!==contexted[0]) {
+                //
+                //         that.hover.locked = true;
+                //
+                //         that.hover.menu.zoomTo({
+                //             targetsize: 0.75, duration: 0,
+                //             //root: $(document).body,
+                //             closeclick: false,
+                //             preservescroll: true,
+                //             animationendcallback: () => {
+                //                 that.zoomState.zoomed = contexted[0];
+                //             }
+                //         });
+                //     } else {
+                //
+                //         that.zoomState.zoomed = undefined;
+                //         that.hover.locked = false;
+                //
+                //
+                //         $('.noScroll').attr('class', '') //HACK remove noScroll
+                //         $($(document).find('body')).attr('style', '');
+                //         //.css({ 'transform': '', 'transform-origin': '' });
+                //
+                //         // $($(document)).zoomTo({
+                //         //     //root: $(document).body,
+                //         //     targetsize: 1.0, duration: 100,
+                //         //     closeclick: false,
+                //         //     preservescroll: true,
+                //         //     animationendcallback: () => {
+                //         //         hoverMenu.zoomed = undefined;
+                //         //     }
+                //         // });
+                //     }
+                //
+                // });
+
+                return false;
+            };
+
+
+            const linkHoverEnter = function(e) {
+                //console.log('over', $(this).html(), e );
+                //soon(() => {
+                    that.hover.on($(this));
+                //});
+            };
+            const linkHoverExit = function (e) {
+                //fade out?
+
+                //console.log('out', $(this).html(), e );
+                // soon(()=> {
+                //     hoverMenu.detach();
+                // });
+            };
+
+
+            $.each(d.find('a'), (i, v) => {
+                var a = $(v);
+
+                // const href = a.attr('href');
+                // if (href)
+                //     console.log(href);
+
+
+                a.click(clickHandler).contextmenu(contextClickHandler).hover(linkHoverEnter, linkHoverExit);
+            });
+
+
+        }
+
+        async set(contentRaw) {
+
+            const content = $(contentRaw);
+
+            this.fix(content);
+
+            soon(() => {
+
+
+                //content = content.select('script').remove();
+                //console.log((this.target)[0]);
+                //const body = content.find('body');
+
+                if (!this.targetShadow) {
+
+                    this.targetShadow =
+                        $((this.target)[0].attachShadow({mode: 'open'})).append(/*hijackRequest, */content)
+                } else {
+                    //replace
+                    //console.log('replace', this.targetShadow, content);
+
+                    this.targetShadow[0].innerHTML = '';
+
+                    soon(() => {
+
+                        $(this.targetShadow[0]).html(content);
+
+                        soon(() => {
+                            const x = this.target[0];
+                            x.scrollTop = 0;
+                        });
+                    });
+                }
+
+            });
+
+        }
+
+        async nav(url) {
+            //TODO show loading overlay indicator
+
+
+            this.hover.off();
+
+            if (this.url && !url.startsWith('http://') && !url.startsWith('https://')) { //HACK TODO other protocols
+                //relative -> absolute
+                url = new URL(url, this.url);
+
+            } else {
+                try {
+                    url = new URL(url);
+                } catch (e) {
+                    alert(e);
+                    return;
+                }
+            }
+
+            this.url = url;
+
+            let u =
+                //"/proxy.html?url=" + url;
+                url;
+            $.get(u).done((x) => this.set(x));
+            //.error((error)=>{
+            //    this.set(errorNode(error));
+            //});
+        }
+    }
+
+
+
+    $(document).ready(function () {
+
+
+
+
+        const main = new Content($('#__'));
+
+        $('#__icon').click(() => {
+            soon(() => {
+
+            });
+        });
+        $('#omnibox').keypress((e) => {
+            console.log('key', this, e);
+        });
+
+        main.nav(
+            //'jslicense.html'
+            'http://en.wikipedia.org'
+        );
+
+    });
+
+
+</script>
+
+<div id="__">
+    <!-- displays the current page -->
+</div>
+
+<div id="__meta">
+    <div id="__menu" class="top_left">
+
+        <input id="omnibox" type="text"/>
+        <button>&blacktriangleright;</button>
+
+    </div>
+
+    <div id="__icon" class="top_right">
+        &dotsquare;
+    </div>
+
+</div>
+
+
+</body>
+</html>
