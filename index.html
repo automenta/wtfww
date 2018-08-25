@@ -54,10 +54,10 @@
         constructor() {
             this.menu = $('<div id="hoverMenu" style="position: fixed; pointer-events: none; background-color:rgba(1,0.75,0,0.25); border: 1px solid gray; opacity: 0.9; z-index: 2">').append(
                 $('<div style="pointer-events:all">').append(
-                    this.left = $('<div style="position: absolute; left: -1em;">'),
-                    this.right = $('<div style="position: absolute; right: -1em;">'),
-                    this.top = $('<div style="position: absolute; top: -1em; ">'),
-                    this.bottom = $('<div style="position: absolute; bottom: -1em; ">')
+                    this.left = $('<div style="position: absolute; right: 100%; display: inline-flex">'),
+                    this.right = $('<div style="position: absolute; left:  100%; display: inline-flex">'),
+                    this.top = $('<div style="position: absolute; bottom:  100%; display: inline-flex">'),
+                    this.bottom = $('<div style="position: absolute; top:  100%; display: inline-flex">')
                 )
             ).prependTo(document.body).hide();
 
@@ -67,6 +67,7 @@
                 }
             });
 
+            this.padding = 5; //pixels
             this.locked = false;
             this.target = undefined;
         }
@@ -87,7 +88,8 @@
 
         hoverUpdate() {
             const B = this.target[0].getBoundingClientRect();
-            this.menu.css({'left': B.left, 'top': B.top, 'width': B.width, 'height': B.height}).show();
+            const halfPadding = this.padding/2;
+            this.menu.css({'left': B.left-halfPadding, 'top': B.top-halfPadding, 'width': B.width+this.padding, 'height': B.height+this.padding}).show();
         }
 
         off() {
@@ -104,19 +106,7 @@
             this.url = undefined;
             this.hover = new HoverMenu();
 
-            this.hover.top.append(
-                // $('<input type="text">'),
-                $('<button>y</button>')
-            );
-            this.hover.bottom.append(
-                $('<button>S</button>')
-            );
-            this.hover.left.append(
-                $('<button>W</button>')
-            );
-            this.hover.right.append(
-                $('<button>E</button>')
-            );
+
 
 
 
@@ -345,6 +335,24 @@
 
         const main = new Content($('#__'));
 
+        const hover = main.hover;
+        // hover.top.append(
+        //     // $('<input type="text">'),
+        //     $('<button>?</button>')
+        // );
+        hover.bottom.append(
+            $('<button style="background-color: deepskyblue">Learn</button>'),
+            $('<button style="background-color: mediumpurple">Teach</button>')
+        );
+        hover.top.append(
+            $('<button style="background-color: yellowgreen">Can</button>'),
+            $('<button style="background-color: orange">Need</button>'),
+            $('<button style="background-color: red">Not</button>')
+        );
+        hover.right.append(
+            $('<button>...</button>')
+        );
+
         $('#__icon').click(() => {
             soon(() => {
 
@@ -355,7 +363,6 @@
         });
 
         main.nav(
-            //'jslicense.html'
             'http://en.wikipedia.org'
         );
 
