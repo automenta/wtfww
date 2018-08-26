@@ -6,7 +6,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <!--pouchDB-->
-    <script src="//cdn.jsdelivr.net/npm/pouchdb@7.0.0/dist/pouchdb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@7.0.0/dist/pouchdb.min.js"></script>
 
 
     <!-- http://jaukia.github.io/zoomooz/ -->
@@ -50,8 +50,27 @@
         setTimeout(x);
     }
 
+    let dbPouch = new PouchDB('localData');
 
+    class DbManager {
+        constructor() {
+            this.hovered = {name: null, url: null};
+        }
 
+        save(tag) {
+            console.log(this.hovered.name, tag);
+            dbPouch.put({_id: String(new Date().getTime()) , tag: tag, name: this.hovered.name}).then(function () {
+                return dbPouch.allDocs({include_docs: true});
+            }).then(function (response) {
+                console.log(response);
+            }).catch(function (err) {
+                console.log(err);
+            });
+
+        }
+    }
+
+    let db = new DbManager();
 
 
     class HoverMenu {
@@ -232,7 +251,8 @@
 
 
             const linkHoverEnter = function(e) {
-                //console.log('over', $(this).html(), e );
+                console.log('over', $(this).html(), e );
+                db.hovered.name = $(this).html();
                 //soon(() => {
                     that.hover.on($(this));
                 //});
@@ -332,6 +352,8 @@
 
 
 
+
+
     $(document).ready(function () {
 
 
@@ -344,14 +366,16 @@
         //     // $('<input type="text">'),
         //     $('<button>?</button>')
         // );
+
+
         hover.bottom.append(
-            $('<button style="background-color: deepskyblue">Learn</button>'),
-            $('<button style="background-color: mediumpurple">Teach</button>')
+            $('<button onclick="db.save('+"'Learn'"+')" style="background-color: deepskyblue">Learn</button>'),
+            $('<button onclick="db.save('+"'Teach'"+')" style="background-color: mediumpurple">Teach</button>')
         );
         hover.top.append(
-            $('<button style="background-color: yellowgreen">Can</button>'),
-            $('<button style="background-color: orange">Need</button>'),
-            $('<button style="background-color: red">Not</button>')
+            $('<button onclick="db.save('+"'Can'"+')" style="background-color: yellowgreen">Can</button>'),
+            $('<button onclick="db.save('+"'Need'"+')" style="background-color: orange">Need</button>'),
+            $('<button onclick="db.save('+"'Not'"+')" style="background-color: red">Not</button>')
         );
         hover.right.append(
             $('<button>...</button>')
