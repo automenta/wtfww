@@ -62,15 +62,56 @@
             dbPouch.put({_id: String(new Date().getTime()) , tag: tag, name: this.hovered.name}).then(function () {
                 return dbPouch.allDocs({include_docs: true});
             }).then(function (response) {
-                console.log(response);
+                viewer.display(response);
             }).catch(function (err) {
                 console.log(err);
             });
 
         }
+
+        loadAll() {
+            dbPouch.allDocs({include_docs: true})
+                .then(function (response) {
+            viewer.display(response);
+        }).catch(function (err) {
+            console.log(err);
+        });
+        }
+
+        delete(id) {
+            dbPouch.get(JSON.stringify(id)).then(function (doc) {
+                dbPouch.remove(doc);
+                db.loadAll();
+            });
+
+
+        }
     }
 
     let db = new DbManager();
+
+    class DbViewer {
+        constructor() {
+
+        }
+
+        display(data) {
+            if (data != undefined) {
+                console.log(data);
+                let el = $("#__list");
+                el.empty();
+                el.append($('<table>'));
+                data.rows.forEach(function (item) {
+                    el.append($('<tr><td> '+ item.doc.tag + '</td><td>' + item.doc.name + '</td><td><button onclick="db.delete('+ String(item.doc._id) +')">delete</button> </td></tr>'));
+                });
+                el.append($('</table>'));
+            }
+
+        }
+
+    }
+
+    let viewer = new DbViewer();
 
 
     class HoverMenu {
@@ -251,7 +292,7 @@
 
 
             const linkHoverEnter = function(e) {
-                console.log('over', $(this).html(), e );
+               // console.log('over', $(this).html(), e );
                 db.hovered.name = $(this).html();
                 //soon(() => {
                     that.hover.on($(this));
@@ -357,7 +398,7 @@
     $(document).ready(function () {
 
 
-
+        db.loadAll();
 
         const main = new Content($('#__'));
 
@@ -411,6 +452,7 @@
     <div id="__icon" class="top_right">
         &dotsquare;
     </div>
+    <div id="__list"></div>
 
 </div>
 <div id="__">
