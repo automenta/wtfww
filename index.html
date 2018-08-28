@@ -10,7 +10,7 @@
 
 
     <!-- http://jaukia.github.io/zoomooz/ -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zoomooz/1.1.6/jquery.zoomooz.min.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/zoomooz/1.1.6/jquery.zoomooz.min.js"></script>-->
     <link rel='stylesheet' href='index.css' type='text/css' media='all'/>
 </head>
 <body>
@@ -234,7 +234,7 @@
                 }
             };
 
-            this.zoomState = { zoomed: false };
+            //this.zoomState = { zoomed: false };
 
             const contextClickHandler = function(e) {
                 //http://jaukia.github.io/zoomooz/#zoomcontainer
@@ -397,6 +397,12 @@
 
     $(document).ready(function () {
 
+        jQuery.ajaxPrefilter(function(options) {
+            if (options.crossDomain && jQuery.support.cors) {
+                const proxyURL = 'http://localhost:8080';
+                options.url = proxyURL + '/' + options.url;
+            }
+        });
 
         db.loadAll();
 
@@ -407,8 +413,14 @@
         //     // $('<input type="text">'),
         //     $('<button>?</button>')
         // );
-
-
+        hover.left.append(
+            $('<select name="subject">').append(
+                ['I'] //'Anyone', 'Everyone', 'No One', 'Who', 'Why'...
+                    .map(x =>
+                        $('<option>').attr('value', x).text(x)
+                    )
+            )
+        );
         hover.bottom.append(
             $('<button onclick="db.save('+"'Learn'"+')" style="background-color: deepskyblue">Learn</button>'),
             $('<button onclick="db.save('+"'Teach'"+')" style="background-color: mediumpurple">Teach</button>')
@@ -416,7 +428,7 @@
         hover.top.append(
             $('<button onclick="db.save('+"'Can'"+')" style="background-color: yellowgreen">Can</button>'),
             $('<button onclick="db.save('+"'Need'"+')" style="background-color: orange">Need</button>'),
-            $('<button onclick="db.save('+"'Not'"+')" style="background-color: red">Not</button>')
+            $('<button onclick="db.save('+"'Not'"+')" style="background-color: indianred">Not</button>')
         );
         hover.right.append(
             $('<button>...</button>')
