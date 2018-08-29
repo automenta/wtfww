@@ -39,9 +39,10 @@ class DbManager {
     constructor() {
         this.hovered = {name: null, url: null, origin: null, target: null};
     }
-
+    //saves on tag click
+    //data : url name, url, origin, target
+    //todo: date, personal id...
     save(tag) {
-        console.log(this.hovered, tag);
         dbPouch.put({_id: String(new Date().getTime()) , tag: tag, data: this.hovered}).then(function () {
             return dbPouch.allDocs({include_docs: true});
         }).then(function (response) {
@@ -52,6 +53,7 @@ class DbManager {
 
     }
 
+    //loads all tagged items and display in list
     loadAll() {
         dbPouch.allDocs({include_docs: true})
             .then(function (response) {
@@ -61,6 +63,7 @@ class DbManager {
         });
     }
 
+    //delete with _id, todo: maybe implement _rev after updates are done
     delete(id) {
         dbPouch.get(JSON.stringify(id)).then(function (doc) {
             dbPouch.remove(doc);
@@ -79,8 +82,7 @@ class DbViewer {
     }
 
     display(data) {
-        if (data != undefined) {
-            console.log(data);
+        if (data !== undefined) {
             let el = $("#__list");
             el.empty();
             el.append($('<table>'));
@@ -276,11 +278,10 @@ class Content {
 
         const linkHoverEnter = function(e) {
             // console.log('over', $(this).html(), e );
-            console.log($(this));
+
             db.hovered.name = $(this).html();
             db.hovered.url = $(this).attr('href');
-            //db.hovered.source = nav.url;
-            console.log(db.hovered);
+
             //soon(() => {
             that.hover.on($(this));
             //});
@@ -392,6 +393,11 @@ class Content {
     // });
 
     db.loadAll();
+
+    //tagged items toggle list
+    $('#__list').hide();
+    $('#listToggle').on('click', () => {$('#__list').toggle()});
+
 
     const main = new Content($('#__'));
 
