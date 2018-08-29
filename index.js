@@ -37,12 +37,12 @@ let dbPouch = new PouchDB('localData');
 
 class DbManager {
     constructor() {
-        this.hovered = {name: null, url: null};
+        this.hovered = {name: null, url: null, origin: null, target: null};
     }
 
     save(tag) {
-        console.log(this.hovered.name, tag);
-        dbPouch.put({_id: String(new Date().getTime()) , tag: tag, name: this.hovered.name}).then(function () {
+        console.log(this.hovered, tag);
+        dbPouch.put({_id: String(new Date().getTime()) , tag: tag, data: this.hovered}).then(function () {
             return dbPouch.allDocs({include_docs: true});
         }).then(function (response) {
             viewer.display(response);
@@ -85,7 +85,7 @@ class DbViewer {
             el.empty();
             el.append($('<table>'));
             data.rows.forEach(function (item) {
-                el.append($('<tr><td> '+ item.doc.tag + '</td><td>' + item.doc.name + '</td><td><button onclick="db.delete('+ String(item.doc._id) +')">delete</button> </td></tr>'));
+                el.append($('<tr><td> '+ item.doc.tag + '</td><td>' + item.doc.data.name + '</td><td><button onclick="db.delete('+ String(item.doc._id) +')">delete</button> </td></tr>'));
             });
             el.append($('</table>'));
         }
@@ -276,7 +276,11 @@ class Content {
 
         const linkHoverEnter = function(e) {
             // console.log('over', $(this).html(), e );
+            console.log($(this));
             db.hovered.name = $(this).html();
+            db.hovered.url = $(this).attr('href');
+            //db.hovered.source = nav.url;
+            console.log(db.hovered);
             //soon(() => {
             that.hover.on($(this));
             //});
@@ -363,6 +367,9 @@ class Content {
         }
 
         this.url = url;
+        //to get data for db
+        db.hovered.origin = url.origin;
+        db.hovered.target = url.href;
 
         let u =
             //"/proxy.html?url=" + url;
