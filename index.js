@@ -195,14 +195,14 @@ class Content {
 
 
         var u = this.url;
-        var base = new URL('/', u);
+        var base = u;//new URL('/', u);
         const baseElement = $('<base href=' + base + '>');
 
         const head = d.find('head');
         if (head[0]) {
             head.prepend(baseElement);
         } else {
-            d.prepend($('head').append(baseElement));
+            d.prepend($('<head/>').append(baseElement));
         }
 
 
@@ -296,8 +296,17 @@ class Content {
         };
 
 
+        // const u = this.url;
+        // $.each(d.find('img'), (i, v) => {
+        //     let vv = $(v);
+        //     let fixedURL = new URL(vv.attr('src'), u).toString();
+        //     console.log(vv.attr('src'), fixedURL);
+        //     vv.attr('src', fixedURL);
+        //
+        // });
+
         $.each(d.find('a'), (i, v) => {
-            var a = $(v);
+            const a = $(v);
 
             // const href = a.attr('href');
             // if (href)
@@ -323,26 +332,31 @@ class Content {
             //console.log((this.target)[0]);
             //const body = content.find('body');
 
-            if (!this.targetShadow) {
+            // if (!this.targetShadow) {
 
+                // this.targetShadow =
+                //     $((this.target)[0].attachShadow({mode: 'open'}));
                 this.targetShadow =
-                    $((this.target)[0].attachShadow({mode: 'open'})).append(/*hijackRequest, */content)
-            } else {
-                //replace
-                //console.log('replace', this.targetShadow, content);
+                    $((this.target));
 
-                this.targetShadow[0].innerHTML = '';
+                this.targetShadow.html(/*hijackRequest, */content);
 
-                soon(() => {
-
-                    $(this.targetShadow[0]).html(content);
-
-                    soon(() => {
-                        const x = this.target[0];
-                        x.scrollTop = 0;
-                    });
-                });
-            }
+            // } else {
+            //     //replace
+            //     //console.log('replace', this.targetShadow, content);
+            //
+            //     this.targetShadow[0].innerHTML = '';
+            //
+            //     soon(() => {
+            //
+            //         $(this.targetShadow[0]).html(content);
+            //
+            //         soon(() => {
+            //             const x = this.target[0];
+            //             x.scrollTop = 0;
+            //         });
+            //     });
+            // }
 
         });
 
@@ -372,9 +386,19 @@ class Content {
         db.hovered.origin = url.origin;
         db.hovered.target = url.href;
 
-        let u =
+        const u =
             //"/proxy.html?url=" + url;
             url;
+
+        //location.url = u;
+
+//         $.ajaxPrefilter(function(options) {
+//             //if (options.crossDomain)
+//                 const nextURL = new URL(options.url, url).toString();
+// console.log('rewrite', options.url, nextURL);
+//             options.url = nextURL;
+//         });
+
         $.get(u).done((x) => this.set(x));
         //.error((error)=>{
         //    this.set(errorNode(error));
