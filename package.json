@@ -2,7 +2,7 @@
   "name": "wtfww",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "old/main.js",
   "bin": "cli.js",
   "scripts": {
     "start": "electron .",
