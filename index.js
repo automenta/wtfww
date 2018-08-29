@@ -385,13 +385,15 @@ class Content {
 
  $(document).ready(function () {
 
+
+
     // $.ajaxPrefilter(function(options) {
     //     if (options.crossDomain && jQuery.support.cors) {
     //         const proxyURL = 'http://localhost:8080';
     //         options.url = proxyURL + '/' + options.url;
     //     }
     // });
-
+     $("html").append($("<head><link rel='stylesheet' href='index.css' type='text/css' media='screen' /></head>"));
     db.loadAll();
 
     //tagged items toggle list
@@ -439,6 +441,7 @@ class Content {
     main.nav(
         'http://en.wikipedia.org'
     );
+
 
 });
 
