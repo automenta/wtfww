@@ -1,5 +1,10 @@
 // I have access to all electron, node.js, *and* DOM APIs.
 const { ipcRenderer: ipc } = require('electron');
+const path = require('path');
+
+function local(file) {
+    return 'file:///' + path.join(__dirname, file);
+}
 
 document.addEventListener('DOMContentLoaded', function (event) {
 //   for(let el of document.querySelectorAll('*')) {
@@ -15,7 +20,12 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
     //document.children[0].innerHTML = 'rewritten';
 
-    $('a').text('abcd');
+    //$('a').text('abcd');
 
+
+    $('head').append(
+        "<link rel='stylesheet' href='" + local('index.css') + "' type='text/css' media='all'/>"
+    );
+    $.get(local('meta.html')).done((x) => $(x).appendTo($('body')));
 
 });

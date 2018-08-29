@@ -417,7 +417,7 @@ class Content {
     //         options.url = proxyURL + '/' + options.url;
     //     }
     // });
-     $("html").append($("<head><link rel='stylesheet' href='index.css' type='text/css' media='screen' /></head>"));
+     $("html").append($("<head><link rel='stylesheet' href='../index.css' type='text/css' media='screen' /></head>"));
     db.loadAll();
 
     //tagged items toggle list
