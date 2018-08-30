@@ -39,15 +39,16 @@
   },
   "dependencies": {
     "cors-anywhere": "^0.4.1",
-    "electron": "beta",
+    "electron": "^3.0.0-beta.8",
     "electron-log": "^2.2.14",
     "electron-settings": "^3.0.7",
     "electron-shortcut-normalizer": "^1.0.0",
     "glob": "^7.1.0",
     "highlight.js": "^9.3.0",
-    "jquery": "^3.3.1",
-    "jsdom": "^12.0.0",
-    "update-electron-app": "^1.1.1"
+    "jquery": "latest",
+    "jsdom": "latest",
+    "update-electron-app": "^1.1.1",
+    "draggabilly": "latest"
   },
   "standard": {
     "env": {

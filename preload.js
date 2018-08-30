@@ -1,7 +1,8 @@
 'use strict';
 
 // I have access to all electron, node.js, *and* DOM APIs.
-const { ipcRenderer: ipc } = require('electron');
+const { ipcRenderer } = require('electron');
+
 const path = require('path');
 
 function local(file) {
@@ -61,6 +62,7 @@ class HoverMenu {
     }
 }
 
+/** deprecated */
 class Content {
     /** target DOM element */
     constructor() {
@@ -317,6 +319,9 @@ class Content {
 //     }
 }
 
+function tag(tag, url) {
+     ipcRenderer.send('tag', { tag: tag, url: url, when: new Date()  });
+}
 
 document.addEventListener('DOMContentLoaded', (e) => {
 
@@ -368,26 +373,34 @@ document.addEventListener('DOMContentLoaded', (e) => {
         )
     );
     hover.bottom.append(
-        $('<button _onclick="db.save('+"'Learn'"+')" style="background-color: deepskyblue">Learn</button>'),
-        $('<button _onclick="db.save('+"'Teach'"+')" style="background-color: mediumpurple">Teach</button>')
+        $('<button tag="learn" style="background-color: deepskyblue">Learn</button>'),
+        $('<button tag="teach" style="background-color: mediumpurple">Teach</button>')
     );
     hover.top.append(
-        $('<button _onclick="db.save('+"'Can'"+')" style="background-color: yellowgreen">Can</button>'),
-        $('<button _onclick="db.save('+"'Need'"+')" style="background-color: orange">Need</button>'),
-        $('<button _onclick="db.save('+"'Not'"+')" style="background-color: indianred">Not</button>')
+        $('<button tag="can" style="background-color: yellowgreen">Can</button>'),
+        $('<button tag="need" style="background-color: orange">Need</button>'),
+        $('<button tag="not" style="background-color: indianred">Not</button>')
     );
     hover.right.append(
         $('<button>...</button>')
     );
 
-    $('#__icon').click(() => {
-        soon(() => {
+    $('button[tag]').click(()=>{
+       const t = $(this).attr('tag');
 
-        });
+       const u = new URL(hover.target.attr('href'), window.location.href).toString();
+
+       tag(t, u);
     });
-    $('#omnibox').keypress((e) => {
-        console.log('key', this, e);
-    });
+
+    // $('#__icon').click(() => {
+    //     soon(() => {
+    //
+    //     });
+    // });
+    // $('#omnibox').keypress((e) => {
+    //     console.log('key', this, e);
+    // });
 
 });
 
