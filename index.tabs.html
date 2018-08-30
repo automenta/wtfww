@@ -126,8 +126,8 @@
 <!--<script src="draggability.js"></script>-->
 <!--<script src="chrome-tabs/js/chrome-tabs.js"></script>-->
 <script>
-    const {app, WebView, BrowserWindow, ipcMain} = require('electron');
-    const path = require('path');
+    // const {app, WebView, BrowserWindow, ipcMain} = require('electron');
+    // const path = require('path');
 
     var ChromeTabs = require('./chrome-tabs/js/chrome-tabs.js');
 
@@ -137,6 +137,8 @@
 
     function activate(tab) {
         //TODO
+
+        //TODO paste index.single.html using $.get
         document.querySelector('#main').innerHTML = (
             '<webview src="https://en.wikipedia.org" preload="./preload.js" disablewebsecurity></webview>'
         );

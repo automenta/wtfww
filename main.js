@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain } = require('electron');
+const {app, BrowserWindow, ipcMain} = require('electron');
 
 
 const path = require('path');
@@ -13,25 +13,14 @@ app.on('ready', function () {
         console.log(`Message received from webview ${JSON.stringify(props)}`);
     });
 
-     mainWindow = new BrowserWindow({
+    var tabs = false;
 
-     });
-     mainWindow.loadURL(
-         'file://' + path.join(__dirname, 'index.html')
-     );
+    mainWindow = new BrowserWindow({});
 
-    // mainWindow = new BrowserWindow({
-    //     webPreferences: {
-    //         nodeIntegration: false,
-    //         preload: path.join(__dirname, 'preload.js'),
-    //         webSecurity: false
-    //     }
-    // });
-    //
-    // mainWindow.loadURL(
-    //     //	'file://' + path.join(__dirname, 'index.html')
-    //     'http://en.wikipedia.org'
-    // );
-    //
-     mainWindow.webContents.openDevTools();
+    mainWindow.loadURL(
+        'file://' + path.join(__dirname, (tabs ? 'index.multi.html' : 'index.single.html'))
+    );
+
+
+    mainWindow.webContents.openDevTools();
 });

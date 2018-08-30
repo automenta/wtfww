@@ -38,7 +38,7 @@ function initialize () {
         let $ = require('jquery');
         mainWindow.$ = $;
 
-        mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
+        mainWindow.loadURL(path.join('file://', __dirname, '/index.tabs.html'))
 
         // Launch fullscreen with DevTools open, usage: npm run debug
         if (debug) {
